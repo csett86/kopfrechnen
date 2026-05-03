@@ -375,12 +375,6 @@
   let currentLevelKey = LEVELS[0].nameKey;
 
   function detectInitialLanguage() {
-    try {
-      const saved = localStorage.getItem('kopfrechnen-lang');
-      if (saved && I18N[saved]) return saved;
-    } catch (error) {
-      console.warn('Language preference read failed:', error);
-    }
     const browserLangs = [...(navigator.languages || []), navigator.language].filter(Boolean);
     for (const lang of browserLangs) {
       if (typeof lang !== 'string') continue;
@@ -419,11 +413,6 @@
     if (!I18N[lang]) return;
     currentLang = lang;
     languageSelect.value = currentLang;
-    try {
-      localStorage.setItem('kopfrechnen-lang', currentLang);
-    } catch (error) {
-      console.warn('Language preference save failed:', error);
-    }
     applyTranslations();
     feedbackEl.textContent = '';
     feedbackEl.className = '';
