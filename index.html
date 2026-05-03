@@ -276,12 +276,12 @@
     let a, b, answer;
 
     if (op === '+') {
-      a = rand(0, 9);
-      b = rand(0, 9);
+      a = rand(0, 99);
+      b = rand(0, 99);
       answer = a + b;
 
     } else if (op === '−') {
-      a = rand(0, 9);
+      a = rand(0, 99);
       b = rand(0, a);   // ensure non-negative result
       answer = a - b;
 
