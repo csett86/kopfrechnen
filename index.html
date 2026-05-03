@@ -36,6 +36,10 @@
       margin-bottom: 2rem;
     }
 
+    #intro-text {
+      white-space: pre-line;
+    }
+
     /* ── Start screen ── */
     #start-screen button {
       margin-top: 1rem;
@@ -191,7 +195,7 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <p class="subtitle"><label for="language-select" id="language-label"></label>:
+    <p class="subtitle"><label for="language-select" id="language-label"></label>
       <select id="language-select">
         <option value="de">Deutsch</option>
         <option value="en">English</option>
@@ -258,7 +262,7 @@
       app_title: 'Kopfrechnen',
       language_label: 'Sprache',
       subtitle: 'Kopfrechnen — gegen die Uhr!',
-      intro_html: 'Löse so viele Aufgaben wie möglich.<br>Die Aufgaben werden mit der Zeit schwerer.<br>Du hast <strong>7 Sekunden</strong> pro Aufgabe.<br>Jede richtige Antwort gibt <strong>1 Punkt</strong>.',
+      intro_text: 'Löse so viele Aufgaben wie möglich.\nDie Aufgaben werden mit der Zeit schwerer.\nDu hast 7 Sekunden pro Aufgabe.\nJede richtige Antwort gibt 1 Punkt.',
       start_button: 'Spiel starten',
       score_label: 'Punkte',
       level_label: 'Level',
@@ -280,7 +284,7 @@
       app_title: 'Mental Math',
       language_label: 'Language',
       subtitle: 'Mental Math — beat the clock!',
-      intro_html: 'Solve as many problems as possible.<br>The problems get harder over time.<br>You have <strong>7 seconds</strong> per problem.<br>Each correct answer gives <strong>1 point</strong>.',
+      intro_text: 'Solve as many problems as possible.\nThe problems get harder over time.\nYou have 7 seconds per problem.\nEach correct answer gives 1 point.',
       start_button: 'Start game',
       score_label: 'Score',
       level_label: 'Level',
@@ -302,7 +306,7 @@
       app_title: 'Hoofdrekenen',
       language_label: 'Taal',
       subtitle: 'Hoofdrekenen — tegen de klok!',
-      intro_html: 'Los zo veel mogelijk opgaven op.<br>De opgaven worden na verloop van tijd moeilijker.<br>Je hebt <strong>7 seconden</strong> per opgave.<br>Elk goed antwoord geeft <strong>1 punt</strong>.',
+      intro_text: 'Los zo veel mogelijk opgaven op.\nDe opgaven worden na verloop van tijd moeilijker.\nJe hebt 7 seconden per opgave.\nElk goed antwoord geeft 1 punt.',
       start_button: 'Start spel',
       score_label: 'Punten',
       level_label: 'Niveau',
@@ -370,7 +374,7 @@
   let startTime = null;   // timestamp when current question started
   let currentLevelKey = LEVELS[0].nameKey;
 
-  function t(key) {
+  function translate(key) {
     return I18N[currentLang][key] ?? key;
   }
 
@@ -380,19 +384,19 @@
 
   function applyTranslations() {
     document.documentElement.lang = currentLang;
-    document.title = t('page_title');
-    document.getElementById('app-title').textContent = t('app_title');
-    document.getElementById('language-label').textContent = t('language_label');
-    document.getElementById('subtitle').textContent = t('subtitle');
-    document.getElementById('intro-text').innerHTML = t('intro_html');
-    document.getElementById('start-btn').textContent = t('start_button');
-    document.getElementById('score-label').textContent = t('score_label');
-    document.getElementById('level-label').textContent = t('level_label');
-    document.getElementById('time-label').textContent = t('time_label');
-    document.getElementById('result-title').textContent = t('result_title');
-    document.getElementById('points-label').textContent = t('points_label');
-    document.getElementById('restart-btn').textContent = t('restart_button');
-    levelDisplay.textContent = t(currentLevelKey);
+    document.title = translate('page_title');
+    document.getElementById('app-title').textContent = translate('app_title');
+    document.getElementById('language-label').textContent = `${translate('language_label')}:`;
+    document.getElementById('subtitle').textContent = translate('subtitle');
+    document.getElementById('intro-text').textContent = translate('intro_text');
+    document.getElementById('start-btn').textContent = translate('start_button');
+    document.getElementById('score-label').textContent = translate('score_label');
+    document.getElementById('level-label').textContent = translate('level_label');
+    document.getElementById('time-label').textContent = translate('time_label');
+    document.getElementById('result-title').textContent = translate('result_title');
+    document.getElementById('points-label').textContent = translate('points_label');
+    document.getElementById('restart-btn').textContent = translate('restart_button');
+    levelDisplay.textContent = translate(currentLevelKey);
   }
 
   function setLanguage(lang) {
@@ -472,7 +476,7 @@
     score = 0;
     currentLevelKey = LEVELS[0].nameKey;
     scoreEl.textContent = '0';
-    levelDisplay.textContent = t(currentLevelKey);
+    levelDisplay.textContent = translate(currentLevelKey);
     feedbackEl.textContent = '';
     feedbackEl.className = '';
 
@@ -514,14 +518,14 @@
       const newLevelKey = getDifficultyLevel(score).nameKey;
       const leveledUp = newLevelKey !== currentLevelKey;
       currentLevelKey = newLevelKey;
-      levelDisplay.textContent = t(currentLevelKey);
+      levelDisplay.textContent = translate(currentLevelKey);
 
       answerEl.className = 'correct';
       if (leveledUp) {
-        feedbackEl.textContent = format(t('feedback_level_up'), { level: t(currentLevelKey) });
+        feedbackEl.textContent = format(translate('feedback_level_up'), { level: translate(currentLevelKey) });
         feedbackEl.className = '';
       } else {
-        feedbackEl.textContent = t('feedback_correct');
+        feedbackEl.textContent = translate('feedback_correct');
         feedbackEl.className = '';
       }
 
@@ -534,7 +538,7 @@
       const correctStr = String(currentAnswer);
       if (!correctStr.startsWith(raw) && !(currentAnswer < 0 && raw === '-')) {
         answerEl.className = 'wrong';
-        feedbackEl.textContent = t('feedback_wrong');
+        feedbackEl.textContent = translate('feedback_wrong');
         feedbackEl.className = 'wrong';
         setTimeout(() => {
           if (answerEl.className === 'wrong') answerEl.className = '';
