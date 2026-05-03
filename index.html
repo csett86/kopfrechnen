@@ -192,7 +192,8 @@
     <h1>Kopf<span>rechnen</span></h1>
     <p class="subtitle">Mental Math — beat the clock!</p>
     <p>Answer as many math problems as you can.<br>
-       You have <strong>10 seconds</strong> per question.<br>
+       You start with <strong>10 seconds</strong> per question.<br>
+       Every <strong>3</strong> correct answers, time drops by <strong>1 second</strong> (min <strong>3s</strong>).<br>
        Each correct answer scores <strong>1 point</strong>.</p>
     <button id="start-btn">Start Game</button>
   </div>
@@ -240,7 +241,8 @@
 </div>
 
 <script>
-  const TOTAL_TIME = 10; // seconds per question
+  const INITIAL_TIME = 10;
+  const MIN_TIME = 3;
 
   const startScreen    = document.getElementById('start-screen');
   const gameScreen     = document.getElementById('game-screen');
@@ -262,7 +264,8 @@
   let score = 0;
   let currentAnswer = null;
   let timerInterval = null;
-  let timeLeft = TOTAL_TIME;
+  let timeLeft = INITIAL_TIME;
+  let currentTimeLimit = INITIAL_TIME;
   let startTime = null;   // timestamp when current question started
 
   // ── Operators ──────────────────────────────────────────────────
@@ -303,13 +306,13 @@
   // ── Timer ───────────────────────────────────────────────────────
   function startTimer() {
     clearInterval(timerInterval);
-    timeLeft = TOTAL_TIME;
+    timeLeft = currentTimeLimit;
     startTime = performance.now();
-    renderTimer(TOTAL_TIME);
+    renderTimer(currentTimeLimit);
 
     timerInterval = setInterval(() => {
       const elapsed = (performance.now() - startTime) / 1000;
-      timeLeft = Math.max(0, TOTAL_TIME - elapsed);
+      timeLeft = Math.max(0, currentTimeLimit - elapsed);
       renderTimer(timeLeft);
 
       if (timeLeft === 0) {
@@ -322,7 +325,7 @@
   function renderTimer(t) {
     const secs = Math.ceil(t);
     timerEl.textContent = secs;
-    const pct = (t / TOTAL_TIME) * 100;
+    const pct = (t / currentTimeLimit) * 100;
     timerBar.style.width = pct + '%';
 
     const urgent = t <= 3;
@@ -333,6 +336,7 @@
   // ── Game flow ───────────────────────────────────────────────────
   function startGame() {
     score = 0;
+    currentTimeLimit = INITIAL_TIME;
     scoreEl.textContent = '0';
     feedbackEl.textContent = '';
     feedbackEl.className = '';
@@ -369,6 +373,7 @@
     if (entered === currentAnswer) {
       clearInterval(timerInterval);
       score += 1;
+      currentTimeLimit = Math.max(MIN_TIME, INITIAL_TIME - Math.floor(score / 3));
       scoreEl.textContent = score;
 
       answerEl.className = 'correct';
