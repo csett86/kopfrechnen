@@ -1,5 +1,5 @@
-# kopfrechnen
-A html game where you calculate simple math against time
+# Kopfrechnen
+A html game where you calculate simple math against time, with increasing difficulty
 
 ![Screenshot of kopfrechnen](./screenshot.png)
 
