@@ -126,6 +126,29 @@
       transition: border-color 0.2s, background 0.2s;
     }
 
+    .answer-input-wrap {
+      position: relative;
+    }
+
+    #answer::placeholder {
+      color: transparent;
+    }
+
+    .answer-placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(calc(-50% + 0.3em), -50%);
+      font-size: 1.6rem;
+      color: rgba(238, 238, 238, 0.65);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #answer:not(:placeholder-shown) + .answer-placeholder {
+      display: none;
+    }
+
     #answer:focus { border-color: #53d8fb; }
     #answer.correct { border-color: #4ecca3; background: #1a3a30; }
     #answer.wrong   { border-color: #e94560; background: #3a1a1e; animation: shake 0.3s; }
@@ -237,13 +260,17 @@
 
     <div class="problem" id="problem"></div>
 
-    <input
-      id="answer"
-      type="number"
-      inputmode="numeric"
-      autocomplete="off"
-      placeholder="?"
-    />
+    <div class="answer-input-wrap">
+      <!-- Keep a single-space placeholder so :placeholder-shown stays active for the custom overlay -->
+      <input
+        id="answer"
+        type="number"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder=" "
+      />
+      <span class="answer-placeholder" aria-hidden="true">?</span>
+    </div>
 
     <div id="feedback"></div>
   </div>
