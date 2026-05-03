@@ -191,9 +191,16 @@
 
   <!-- Start screen -->
   <div id="start-screen">
+    <p class="subtitle"><label for="language-select" id="language-label">Sprache</label>:
+      <select id="language-select">
+        <option value="de">Deutsch</option>
+        <option value="en">English</option>
+        <option value="nl">Nederlands</option>
+      </select>
+    </p>
     <h1>Kopf<span>rechnen</span></h1>
-    <p class="subtitle">Kopfrechnen — gegen die Uhr!</p>
-    <p>Löse so viele Aufgaben wie möglich.<br>
+    <p class="subtitle" id="subtitle">Kopfrechnen — gegen die Uhr!</p>
+    <p id="intro-text">Löse so viele Aufgaben wie möglich.<br>
        Die Aufgaben werden mit der Zeit schwerer.<br>
        Du hast <strong>7 Sekunden</strong> pro Aufgabe.<br>
        Jede richtige Antwort gibt <strong>1 Punkt</strong>.</p>
@@ -204,15 +211,15 @@
   <div id="game-screen">
     <div class="hud">
       <div class="score-box">
-         <div class="label">Punkte</div>
+          <div class="label" id="score-label">Punkte</div>
         <div class="value" id="score">0</div>
       </div>
       <div class="level-box">
-        <div class="label">Level</div>
+        <div class="label" id="level-label">Level</div>
         <div class="value" id="level-display">Einfach</div>
       </div>
       <div class="timer-box" id="timer-box">
-         <div class="label">Zeit</div>
+          <div class="label" id="time-label">Zeit</div>
         <div class="value" id="timer">7</div>
       </div>
     </div>
@@ -236,10 +243,10 @@
 
   <!-- Game over screen -->
   <div id="gameover-screen">
-    <div class="gameover-title">Ergebnis</div>
+    <div class="gameover-title" id="result-title">Ergebnis</div>
     <div class="final-score">
       <span id="final-score">0</span>
-      Punkte
+      <span id="points-label">Punkte</span>
     </div>
     <button id="restart-btn">Nochmal spielen</button>
   </div>
@@ -248,17 +255,83 @@
 
 <script>
   const INITIAL_TIME = 7;
+  const I18N = {
+    de: {
+      page_title: 'Kopfrechnen – Rechnen gegen die Zeit',
+      language_label: 'Sprache',
+      subtitle: 'Kopfrechnen — gegen die Uhr!',
+      intro_html: 'Löse so viele Aufgaben wie möglich.<br>Die Aufgaben werden mit der Zeit schwerer.<br>Du hast <strong>7 Sekunden</strong> pro Aufgabe.<br>Jede richtige Antwort gibt <strong>1 Punkt</strong>.',
+      start_button: 'Spiel starten',
+      score_label: 'Punkte',
+      level_label: 'Level',
+      time_label: 'Zeit',
+      result_title: 'Ergebnis',
+      points_label: 'Punkte',
+      restart_button: 'Nochmal spielen',
+      feedback_correct: '✓ Richtig!',
+      feedback_wrong: '✗ Weiter versuchen',
+      feedback_level_up: '⭐ Level: {level}!',
+      level_easy: 'Einfach',
+      level_light: 'Leicht',
+      level_medium: 'Mittel',
+      level_hard: 'Schwer',
+      level_expert: 'Experte',
+    },
+    en: {
+      page_title: 'Mental Math – Race Against Time',
+      language_label: 'Language',
+      subtitle: 'Mental Math — beat the clock!',
+      intro_html: 'Solve as many problems as possible.<br>The problems get harder over time.<br>You have <strong>7 seconds</strong> per problem.<br>Each correct answer gives <strong>1 point</strong>.',
+      start_button: 'Start game',
+      score_label: 'Score',
+      level_label: 'Level',
+      time_label: 'Time',
+      result_title: 'Result',
+      points_label: 'Points',
+      restart_button: 'Play again',
+      feedback_correct: '✓ Correct!',
+      feedback_wrong: '✗ Keep trying',
+      feedback_level_up: '⭐ Level: {level}!',
+      level_easy: 'Easy',
+      level_light: 'Light',
+      level_medium: 'Medium',
+      level_hard: 'Hard',
+      level_expert: 'Expert',
+    },
+    nl: {
+      page_title: 'Hoofdrekenen – Rekenen tegen de tijd',
+      language_label: 'Taal',
+      subtitle: 'Hoofdrekenen — tegen de klok!',
+      intro_html: 'Los zo veel mogelijk opgaven op.<br>De opgaven worden na verloop van tijd moeilijker.<br>Je hebt <strong>7 seconden</strong> per opgave.<br>Elk goed antwoord geeft <strong>1 punt</strong>.',
+      start_button: 'Start spel',
+      score_label: 'Punten',
+      level_label: 'Niveau',
+      time_label: 'Tijd',
+      result_title: 'Resultaat',
+      points_label: 'Punten',
+      restart_button: 'Opnieuw spelen',
+      feedback_correct: '✓ Correct!',
+      feedback_wrong: '✗ Blijf proberen',
+      feedback_level_up: '⭐ Niveau: {level}!',
+      level_easy: 'Makkelijk',
+      level_light: 'Licht',
+      level_medium: 'Gemiddeld',
+      level_hard: 'Moeilijk',
+      level_expert: 'Expert',
+    },
+  };
+  let currentLang = 'de';
 
   // ── Difficulty levels ───────────────────────────────────────────
   // Each level defines which operations are available, the max operand for
   // addition/subtraction, the max factor for multiplication, and the max
   // divisor/quotient for division.
   const LEVELS = [
-    { threshold:  0, name: 'Einfach', ops: ['+'],                   addMax: 10, mulMax: 0,  divMax: 0  },
-    { threshold:  4, name: 'Leicht',  ops: ['+', '−'],              addMax: 20, mulMax: 0,  divMax: 0  },
-    { threshold:  9, name: 'Mittel',  ops: ['+', '−', '×'],         addMax: 50, mulMax: 6,  divMax: 0  },
-    { threshold: 18, name: 'Schwer',  ops: ['+', '−', '×', '÷'],   addMax: 99, mulMax: 9,  divMax: 5  },
-    { threshold: 30, name: 'Experte', ops: ['+', '−', '×', '÷'],   addMax: 150, mulMax: 12, divMax: 9 },
+    { threshold:  0, nameKey: 'level_easy',   ops: ['+'],                  addMax: 10, mulMax: 0,  divMax: 0  },
+    { threshold:  4, nameKey: 'level_light',  ops: ['+', '−'],             addMax: 20, mulMax: 0,  divMax: 0  },
+    { threshold:  9, nameKey: 'level_medium', ops: ['+', '−', '×'],        addMax: 50, mulMax: 6,  divMax: 0  },
+    { threshold: 18, nameKey: 'level_hard',   ops: ['+', '−', '×', '÷'],   addMax: 99, mulMax: 9,  divMax: 5  },
+    { threshold: 30, nameKey: 'level_expert', ops: ['+', '−', '×', '÷'],   addMax: 150, mulMax: 12, divMax: 9 },
   ];
 
   function getDifficultyLevel(s) {
@@ -283,17 +356,51 @@
   const feedbackEl    = document.getElementById('feedback');
   const finalScore    = document.getElementById('final-score');
   const levelDisplay  = document.getElementById('level-display');
+  const languageSelect = document.getElementById('language-select');
 
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
   answerEl.addEventListener('input', onAnswerInput);
+  languageSelect.addEventListener('change', (event) => setLanguage(event.target.value));
 
   let score = 0;
   let currentAnswer = null;
   let timerInterval = null;
   let timeLeft = INITIAL_TIME;
   let startTime = null;   // timestamp when current question started
-  let currentLevelName = LEVELS[0].name;
+  let currentLevelKey = LEVELS[0].nameKey;
+
+  function t(key) {
+    return I18N[currentLang][key] ?? key;
+  }
+
+  function format(template, params = {}) {
+    return template.replace(/\{(\w+)\}/g, (_, key) => params[key] ?? '');
+  }
+
+  function applyTranslations() {
+    document.documentElement.lang = currentLang;
+    document.title = t('page_title');
+    document.getElementById('language-label').textContent = t('language_label');
+    document.getElementById('subtitle').textContent = t('subtitle');
+    document.getElementById('intro-text').innerHTML = t('intro_html');
+    document.getElementById('start-btn').textContent = t('start_button');
+    document.getElementById('score-label').textContent = t('score_label');
+    document.getElementById('level-label').textContent = t('level_label');
+    document.getElementById('time-label').textContent = t('time_label');
+    document.getElementById('result-title').textContent = t('result_title');
+    document.getElementById('points-label').textContent = t('points_label');
+    document.getElementById('restart-btn').textContent = t('restart_button');
+    levelDisplay.textContent = t(currentLevelKey);
+  }
+
+  function setLanguage(lang) {
+    if (!I18N[lang]) return;
+    currentLang = lang;
+    applyTranslations();
+  }
+
+  applyTranslations();
 
   // ── Problem generation ──────────────────────────────────────────
   function generateProblem() {
@@ -362,9 +469,9 @@
   // ── Game flow ───────────────────────────────────────────────────
   function startGame() {
     score = 0;
-    currentLevelName = LEVELS[0].name;
+    currentLevelKey = LEVELS[0].nameKey;
     scoreEl.textContent = '0';
-    levelDisplay.textContent = currentLevelName;
+    levelDisplay.textContent = t(currentLevelKey);
     feedbackEl.textContent = '';
     feedbackEl.className = '';
 
@@ -403,17 +510,17 @@
       scoreEl.textContent = score;
 
       // Check for level-up
-      const newLevelName = getDifficultyLevel(score).name;
-      const leveledUp = newLevelName !== currentLevelName;
-      currentLevelName = newLevelName;
-      levelDisplay.textContent = currentLevelName;
+      const newLevelKey = getDifficultyLevel(score).nameKey;
+      const leveledUp = newLevelKey !== currentLevelKey;
+      currentLevelKey = newLevelKey;
+      levelDisplay.textContent = t(currentLevelKey);
 
       answerEl.className = 'correct';
       if (leveledUp) {
-        feedbackEl.textContent = `⭐ Level: ${currentLevelName}!`;
+        feedbackEl.textContent = format(t('feedback_level_up'), { level: t(currentLevelKey) });
         feedbackEl.className = '';
       } else {
-        feedbackEl.textContent = '✓ Richtig!';
+        feedbackEl.textContent = t('feedback_correct');
         feedbackEl.className = '';
       }
 
@@ -426,7 +533,7 @@
       const correctStr = String(currentAnswer);
       if (!correctStr.startsWith(raw) && !(currentAnswer < 0 && raw === '-')) {
         answerEl.className = 'wrong';
-        feedbackEl.textContent = '✗ Weiter versuchen';
+        feedbackEl.textContent = t('feedback_wrong');
         feedbackEl.className = 'wrong';
         setTimeout(() => {
           if (answerEl.className === 'wrong') answerEl.className = '';
