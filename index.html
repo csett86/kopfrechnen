@@ -195,7 +195,7 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <p class="subtitle"><label for="language-select" id="language-label">Sprache:</label>
+    <p class="subtitle"><label for="language-select" id="language-label">Language:</label>
       <select id="language-select">
         <option value="de">Deutsch</option>
         <option value="en">English</option>
@@ -378,7 +378,9 @@
     try {
       const saved = localStorage.getItem('kopfrechnen-lang');
       if (saved && I18N[saved]) return saved;
-    } catch {}
+    } catch (error) {
+      console.warn('Language preference read failed:', error);
+    }
     const browserLangs = [...(navigator.languages || []), navigator.language];
     for (const lang of browserLangs) {
       if (!lang) continue;
@@ -392,7 +394,7 @@
     return I18N[currentLang][key] ?? key;
   }
 
-  function format(template, params = {}) {
+  function formatMessage(template, params = {}) {
     return template.replace(/\{(\w+)\}/g, (_, key) => params[key] ?? '');
   }
 
@@ -419,7 +421,9 @@
     languageSelect.value = currentLang;
     try {
       localStorage.setItem('kopfrechnen-lang', currentLang);
-    } catch {}
+    } catch (error) {
+      console.warn('Language preference save failed:', error);
+    }
     applyTranslations();
     feedbackEl.textContent = '';
     feedbackEl.className = '';
@@ -543,7 +547,7 @@
 
       answerEl.className = 'correct';
       if (leveledUp) {
-        feedbackEl.textContent = format(translate('feedback_level_up'), { level: translate(currentLevelKey) });
+        feedbackEl.textContent = formatMessage(translate('feedback_level_up'), { level: translate(currentLevelKey) });
         feedbackEl.className = '';
       } else {
         feedbackEl.textContent = translate('feedback_correct');
