@@ -51,12 +51,14 @@
       margin-bottom: 1.5rem;
     }
 
-    .score-box, .timer-box {
+    .score-box, .timer-box, .level-box {
       background: #16213e;
       border-radius: 10px;
       padding: 0.6rem 1.2rem;
       min-width: 100px;
     }
+
+    .level-box .value { color: #f9ca24; font-size: 1rem; font-weight: 700; padding-top: 0.25rem; }
 
     .label {
       font-size: 0.7rem;
@@ -192,6 +194,7 @@
     <h1>Kopf<span>rechnen</span></h1>
     <p class="subtitle">Kopfrechnen — schlag die Uhr!</p>
     <p>Löse so viele Aufgaben wie möglich.<br>
+       Die Aufgaben beginnen einfach und werden schwieriger.<br>
        Du hast zu Beginn <strong>10 Sekunden</strong> pro Aufgabe.<br>
        Alle <strong>3</strong> richtigen Antworten sinkt die Zeit um <strong>1 Sekunde</strong> (mind. <strong>3s</strong>).<br>
        Jede richtige Antwort gibt <strong>1 Punkt</strong>.</p>
@@ -204,6 +207,10 @@
       <div class="score-box">
          <div class="label">Punkte</div>
         <div class="value" id="score">0</div>
+      </div>
+      <div class="level-box">
+        <div class="label">Level</div>
+        <div class="value" id="level-display">Einfach</div>
       </div>
       <div class="timer-box" id="timer-box">
          <div class="label">Zeit</div>
@@ -244,18 +251,40 @@
   const INITIAL_TIME = 10;
   const MIN_TIME = 3;
 
+  // ── Difficulty levels ───────────────────────────────────────────
+  // Each level defines which operations are available, the max operand for
+  // addition/subtraction, the max factor for multiplication, and the max
+  // divisor/quotient for division.
+  const LEVELS = [
+    { threshold:  0, name: 'Einfach', ops: ['+'],                   addMax: 10, mulMax: 0,  divMax: 0  },
+    { threshold:  4, name: 'Leicht',  ops: ['+', '−'],              addMax: 20, mulMax: 0,  divMax: 0  },
+    { threshold:  9, name: 'Mittel',  ops: ['+', '−', '×'],         addMax: 50, mulMax: 6,  divMax: 0  },
+    { threshold: 18, name: 'Schwer',  ops: ['+', '−', '×', '÷'],   addMax: 99, mulMax: 9,  divMax: 5  },
+    { threshold: 30, name: 'Experte', ops: ['+', '−', '×', '÷'],   addMax: 150, mulMax: 12, divMax: 9 },
+  ];
+
+  function getDifficultyLevel(s) {
+    let lvl = LEVELS[0];
+    for (const l of LEVELS) {
+      if (s >= l.threshold) lvl = l;
+      else break;
+    }
+    return lvl;
+  }
+
   const startScreen    = document.getElementById('start-screen');
   const gameScreen     = document.getElementById('game-screen');
   const gameoverScreen = document.getElementById('gameover-screen');
 
-  const scoreEl    = document.getElementById('score');
-  const timerEl    = document.getElementById('timer');
-  const timerBox   = document.getElementById('timer-box');
-  const timerBar   = document.getElementById('timer-bar');
-  const problemEl  = document.getElementById('problem');
-  const answerEl   = document.getElementById('answer');
-  const feedbackEl = document.getElementById('feedback');
-  const finalScore = document.getElementById('final-score');
+  const scoreEl       = document.getElementById('score');
+  const timerEl       = document.getElementById('timer');
+  const timerBox      = document.getElementById('timer-box');
+  const timerBar      = document.getElementById('timer-bar');
+  const problemEl     = document.getElementById('problem');
+  const answerEl      = document.getElementById('answer');
+  const feedbackEl    = document.getElementById('feedback');
+  const finalScore    = document.getElementById('final-score');
+  const levelDisplay  = document.getElementById('level-display');
 
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
@@ -267,33 +296,33 @@
   let timeLeft = INITIAL_TIME;
   let currentTimeLimit = INITIAL_TIME;
   let startTime = null;   // timestamp when current question started
+  let currentLevelName = LEVELS[0].name;
 
-  // ── Operators ──────────────────────────────────────────────────
-  const ops = ['+', '−', '×', '÷'];
-
+  // ── Problem generation ──────────────────────────────────────────
   function generateProblem() {
-    const op = ops[Math.floor(Math.random() * ops.length)];
+    const lvl = getDifficultyLevel(score);
+    const op  = lvl.ops[Math.floor(Math.random() * lvl.ops.length)];
     let a, b, answer;
 
     if (op === '+') {
-      a = rand(0, 99);
-      b = rand(0, 99);
+      a = rand(1, lvl.addMax);
+      b = rand(1, lvl.addMax);
       answer = a + b;
 
     } else if (op === '−') {
-      a = rand(0, 99);
-      b = rand(0, a);   // ensure non-negative result
+      a = rand(1, lvl.addMax);
+      b = rand(1, a);     // ensure positive result (avoids trivial n − 0)
       answer = a - b;
 
     } else if (op === '×') {
-      a = rand(0, 9);
-      b = rand(0, 9);
+      a = rand(2, lvl.mulMax);
+      b = rand(2, lvl.mulMax);
       answer = a * b;
 
-    } else {               // ÷
-      b = rand(1, 9);      // divisor 1-9 (avoid divide-by-zero)
-      answer = rand(0, 9); // quotient 0-9
-      a = b * answer;      // dividend — guaranteed integer result
+    } else {              // ÷
+      b = rand(2, lvl.divMax);       // divisor ≥ 2
+      answer = rand(1, lvl.mulMax);  // quotient scales with multiplication range
+      a = b * answer;                // dividend — guaranteed integer result
     }
 
     return { text: `${a} ${op} ${b}`, answer };
@@ -337,7 +366,9 @@
   function startGame() {
     score = 0;
     currentTimeLimit = INITIAL_TIME;
+    currentLevelName = LEVELS[0].name;
     scoreEl.textContent = '0';
+    levelDisplay.textContent = currentLevelName;
     feedbackEl.textContent = '';
     feedbackEl.className = '';
 
@@ -376,11 +407,22 @@
       currentTimeLimit = Math.max(MIN_TIME, INITIAL_TIME - Math.floor(score / 3));
       scoreEl.textContent = score;
 
-      answerEl.className = 'correct';
-      feedbackEl.textContent = '✓ Richtig!';
-      feedbackEl.className = '';
+      // Check for level-up
+      const newLevelName = getDifficultyLevel(score).name;
+      const leveledUp = newLevelName !== currentLevelName;
+      currentLevelName = newLevelName;
+      levelDisplay.textContent = currentLevelName;
 
-      setTimeout(nextQuestion, 400);
+      answerEl.className = 'correct';
+      if (leveledUp) {
+        feedbackEl.textContent = `⭐ Level: ${currentLevelName}!`;
+        feedbackEl.className = '';
+      } else {
+        feedbackEl.textContent = '✓ Richtig!';
+        feedbackEl.className = '';
+      }
+
+      setTimeout(nextQuestion, leveledUp ? 700 : 400);
     } else {
       // Only shake when a full plausible answer has been typed.
       // We check by seeing if the answer could still be correct if more
