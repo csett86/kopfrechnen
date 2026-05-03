@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kopfrechnen – Mental Math</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #1a1a2e;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #app {
+      text-align: center;
+      width: 360px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+      color: #e94560;
+    }
+
+    h1 span { color: #eee; }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Start screen ── */
+    #start-screen button {
+      margin-top: 1rem;
+    }
+
+    /* ── Game screen ── */
+    #game-screen { display: none; }
+
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .score-box, .timer-box {
+      background: #16213e;
+      border-radius: 10px;
+      padding: 0.6rem 1.2rem;
+      min-width: 100px;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 0.2rem;
+    }
+
+    .value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .score-box .value { color: #0f3460; color: #e94560; }
+
+    .timer-box .value { color: #53d8fb; }
+    .timer-box.urgent .value { color: #ff6b6b; animation: pulse 0.5s infinite alternate; }
+
+    @keyframes pulse { from { opacity: 1; } to { opacity: 0.4; } }
+
+    /* progress bar */
+    .timer-bar-wrap {
+      height: 6px;
+      background: #16213e;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    #timer-bar {
+      height: 100%;
+      background: #53d8fb;
+      width: 100%;
+      transition: width 0.1s linear, background-color 0.3s;
+      border-radius: 3px;
+    }
+
+    #timer-bar.urgent { background: #ff6b6b; }
+
+    /* problem */
+    .problem {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+      min-height: 4.5rem;
+    }
+
+    /* answer input */
+    #answer {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      font-size: 1.6rem;
+      text-align: center;
+      border: 2px solid #0f3460;
+      border-radius: 12px;
+      background: #16213e;
+      color: #eee;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    #answer:focus { border-color: #53d8fb; }
+    #answer.correct { border-color: #4ecca3; background: #1a3a30; }
+    #answer.wrong   { border-color: #e94560; background: #3a1a1e; animation: shake 0.3s; }
+
+    @keyframes shake {
+      0%   { transform: translateX(0); }
+      25%  { transform: translateX(-6px); }
+      50%  { transform: translateX(6px); }
+      75%  { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+
+    /* feedback */
+    #feedback {
+      margin-top: 0.75rem;
+      font-size: 0.9rem;
+      min-height: 1.2rem;
+      color: #4ecca3;
+    }
+
+    #feedback.wrong { color: #e94560; }
+
+    /* ── Game over screen ── */
+    #gameover-screen { display: none; }
+
+    .gameover-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #e94560;
+      margin-bottom: 0.5rem;
+    }
+
+    .final-score {
+      font-size: 1.1rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .final-score span {
+      color: #eee;
+      font-size: 3rem;
+      font-weight: 700;
+      display: block;
+      margin: 0.3rem 0;
+    }
+
+    /* shared button */
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      background: #e94560;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover  { background: #c73652; }
+    button:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Start screen -->
+  <div id="start-screen">
+    <h1>Kopf<span>rechnen</span></h1>
+    <p class="subtitle">Mental Math — beat the clock!</p>
+    <p>Answer as many math problems as you can.<br>
+       You have <strong>10 seconds</strong> per question.<br>
+       Each correct answer scores <strong>1 point</strong>.</p>
+    <button id="start-btn">Start Game</button>
+  </div>
+
+  <!-- Game screen -->
+  <div id="game-screen">
+    <div class="hud">
+      <div class="score-box">
+        <div class="label">Score</div>
+        <div class="value" id="score">0</div>
+      </div>
+      <div class="timer-box" id="timer-box">
+        <div class="label">Time</div>
+        <div class="value" id="timer">10</div>
+      </div>
+    </div>
+
+    <div class="timer-bar-wrap">
+      <div id="timer-bar"></div>
+    </div>
+
+    <div class="problem" id="problem"></div>
+
+    <input
+      id="answer"
+      type="number"
+      inputmode="numeric"
+      autocomplete="off"
+      placeholder="?"
+    />
+
+    <div id="feedback"></div>
+  </div>
+
+  <!-- Game over screen -->
+  <div id="gameover-screen">
+    <div class="gameover-title">Time's Up!</div>
+    <div class="final-score">
+      Your score
+      <span id="final-score">0</span>
+    </div>
+    <button id="restart-btn">Play Again</button>
+  </div>
+
+</div>
+
+<script>
+  const TOTAL_TIME = 10; // seconds per question
+
+  const startScreen    = document.getElementById('start-screen');
+  const gameScreen     = document.getElementById('game-screen');
+  const gameoverScreen = document.getElementById('gameover-screen');
+
+  const scoreEl    = document.getElementById('score');
+  const timerEl    = document.getElementById('timer');
+  const timerBox   = document.getElementById('timer-box');
+  const timerBar   = document.getElementById('timer-bar');
+  const problemEl  = document.getElementById('problem');
+  const answerEl   = document.getElementById('answer');
+  const feedbackEl = document.getElementById('feedback');
+  const finalScore = document.getElementById('final-score');
+
+  document.getElementById('start-btn').addEventListener('click', startGame);
+  document.getElementById('restart-btn').addEventListener('click', startGame);
+  answerEl.addEventListener('input', onAnswerInput);
+
+  let score = 0;
+  let currentAnswer = null;
+  let timerInterval = null;
+  let timeLeft = TOTAL_TIME;
+  let startTime = null;   // timestamp when current question started
+
+  // ── Operators ──────────────────────────────────────────────────
+  const ops = ['+', '−', '×', '÷'];
+
+  function generateProblem() {
+    const op = ops[Math.floor(Math.random() * ops.length)];
+    let a, b, answer;
+
+    if (op === '+') {
+      a = rand(0, 9);
+      b = rand(0, 9);
+      answer = a + b;
+
+    } else if (op === '−') {
+      a = rand(0, 9);
+      b = rand(0, a);   // ensure non-negative result
+      answer = a - b;
+
+    } else if (op === '×') {
+      a = rand(0, 9);
+      b = rand(0, 9);
+      answer = a * b;
+
+    } else {               // ÷
+      b = rand(1, 9);      // divisor 1-9 (avoid divide-by-zero)
+      answer = rand(0, 9); // quotient 0-9
+      a = b * answer;      // dividend — guaranteed integer result
+    }
+
+    return { text: `${a} ${op} ${b}`, answer };
+  }
+
+  function rand(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // ── Timer ───────────────────────────────────────────────────────
+  function startTimer() {
+    clearInterval(timerInterval);
+    timeLeft = TOTAL_TIME;
+    startTime = performance.now();
+    renderTimer(TOTAL_TIME);
+
+    timerInterval = setInterval(() => {
+      const elapsed = (performance.now() - startTime) / 1000;
+      timeLeft = Math.max(0, TOTAL_TIME - elapsed);
+      renderTimer(timeLeft);
+
+      if (timeLeft === 0) {
+        clearInterval(timerInterval);
+        endGame();
+      }
+    }, 100);
+  }
+
+  function renderTimer(t) {
+    const secs = Math.ceil(t);
+    timerEl.textContent = secs;
+    const pct = (t / TOTAL_TIME) * 100;
+    timerBar.style.width = pct + '%';
+
+    const urgent = t <= 3;
+    timerBox.classList.toggle('urgent', urgent);
+    timerBar.classList.toggle('urgent', urgent);
+  }
+
+  // ── Game flow ───────────────────────────────────────────────────
+  function startGame() {
+    score = 0;
+    scoreEl.textContent = '0';
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
+
+    startScreen.style.display    = 'none';
+    gameoverScreen.style.display = 'none';
+    gameScreen.style.display     = 'block';
+
+    nextQuestion();
+  }
+
+  function nextQuestion() {
+    const problem = generateProblem();
+    currentAnswer = problem.answer;
+    problemEl.textContent = problem.text + ' =';
+
+    answerEl.value = '';
+    answerEl.className = '';
+    answerEl.focus();
+
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
+
+    startTimer();
+  }
+
+  function onAnswerInput() {
+    const raw = answerEl.value.trim();
+    if (raw === '' || raw === '-') return;
+
+    const entered = parseInt(raw, 10);
+    if (isNaN(entered)) return;
+
+    if (entered === currentAnswer) {
+      clearInterval(timerInterval);
+      score += 1;
+      scoreEl.textContent = score;
+
+      answerEl.className = 'correct';
+      feedbackEl.textContent = '✓ Correct!';
+      feedbackEl.className = '';
+
+      setTimeout(nextQuestion, 400);
+    } else {
+      // Only shake when a full plausible answer has been typed.
+      // We check by seeing if the answer could still be correct if more
+      // digits are typed (simple heuristic: typed string is a prefix of
+      // the correct answer string).
+      const correctStr = String(currentAnswer);
+      if (!correctStr.startsWith(raw) && !(currentAnswer < 0 && raw === '-')) {
+        answerEl.className = 'wrong';
+        feedbackEl.textContent = '✗ Try again';
+        feedbackEl.className = 'wrong';
+        setTimeout(() => {
+          if (answerEl.className === 'wrong') answerEl.className = '';
+          if (feedbackEl.className === 'wrong') {
+            feedbackEl.textContent = '';
+            feedbackEl.className = '';
+          }
+        }, 600);
+      }
+    }
+  }
+
+  function endGame() {
+    clearInterval(timerInterval);
+    answerEl.blur();
+    gameScreen.style.display     = 'none';
+    gameoverScreen.style.display = 'block';
+    finalScore.textContent = score;
+  }
+</script>
+</body>
+</html>
