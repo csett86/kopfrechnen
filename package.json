@@ -1,0 +1,12 @@
+{
+  "name": "kopfrechnen",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:ci": "xvfb-run -a npm test",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.59.1"
+  }
+}
