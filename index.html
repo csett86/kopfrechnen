@@ -214,7 +214,7 @@
       </div>
       <div class="timer-box" id="timer-box">
          <div class="label">Zeit</div>
-        <div class="value" id="timer">10</div>
+        <div class="value" id="timer">7</div>
       </div>
     </div>
 
@@ -248,8 +248,7 @@
 </div>
 
 <script>
-  const INITIAL_TIME = 10;
-  const MIN_TIME = 3;
+  const INITIAL_TIME = 7;
 
   // ── Difficulty levels ───────────────────────────────────────────
   // Each level defines which operations are available, the max operand for
@@ -294,7 +293,6 @@
   let currentAnswer = null;
   let timerInterval = null;
   let timeLeft = INITIAL_TIME;
-  let currentTimeLimit = INITIAL_TIME;
   let startTime = null;   // timestamp when current question started
   let currentLevelName = LEVELS[0].name;
 
@@ -335,13 +333,13 @@
   // ── Timer ───────────────────────────────────────────────────────
   function startTimer() {
     clearInterval(timerInterval);
-    timeLeft = currentTimeLimit;
+    timeLeft = INITIAL_TIME;
     startTime = performance.now();
-    renderTimer(currentTimeLimit);
+    renderTimer(INITIAL_TIME);
 
     timerInterval = setInterval(() => {
       const elapsed = (performance.now() - startTime) / 1000;
-      timeLeft = Math.max(0, currentTimeLimit - elapsed);
+      timeLeft = Math.max(0, INITIAL_TIME - elapsed);
       renderTimer(timeLeft);
 
       if (timeLeft === 0) {
@@ -354,7 +352,7 @@
   function renderTimer(t) {
     const secs = Math.ceil(t);
     timerEl.textContent = secs;
-    const pct = (t / currentTimeLimit) * 100;
+    const pct = (t / INITIAL_TIME) * 100;
     timerBar.style.width = pct + '%';
 
     const urgent = t <= 3;
@@ -365,7 +363,6 @@
   // ── Game flow ───────────────────────────────────────────────────
   function startGame() {
     score = 0;
-    currentTimeLimit = INITIAL_TIME;
     currentLevelName = LEVELS[0].name;
     scoreEl.textContent = '0';
     levelDisplay.textContent = currentLevelName;
@@ -404,7 +401,6 @@
     if (entered === currentAnswer) {
       clearInterval(timerInterval);
       score += 1;
-      currentTimeLimit = Math.max(MIN_TIME, INITIAL_TIME - Math.floor(score / 3));
       scoreEl.textContent = score;
 
       // Check for level-up
