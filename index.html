@@ -381,9 +381,9 @@
     } catch (error) {
       console.warn('Language preference read failed:', error);
     }
-    const browserLangs = [...(navigator.languages || []), navigator.language];
+    const browserLangs = [...(navigator.languages || []), navigator.language].filter(Boolean);
     for (const lang of browserLangs) {
-      if (!lang) continue;
+      if (typeof lang !== 'string') continue;
       const short = lang.toLowerCase().slice(0, 2);
       if (I18N[short]) return short;
     }
