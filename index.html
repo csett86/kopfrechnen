@@ -302,13 +302,13 @@
     let a, b, answer;
 
     if (op === '+') {
-      a = rand(1, lvl.addMax);
-      b = rand(1, lvl.addMax);
+      a = rand(3, lvl.addMax);
+      b = rand(3, lvl.addMax);
       answer = a + b;
 
     } else if (op === '−') {
-      a = rand(1, lvl.addMax);
-      b = rand(1, a);     // ensure positive result (avoids trivial n − 0)
+      a = rand(3, lvl.addMax);
+      b = rand(3, a);     // ensure positive result (avoids trivial n − 0)
       answer = a - b;
 
     } else if (op === '×') {
