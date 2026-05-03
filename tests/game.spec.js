@@ -42,7 +42,8 @@ test('increments score for a correct answer', async ({ page }) => {
   const problem = await page.locator('#problem').textContent();
   const answer = solve(problem || '');
 
-  await page.locator('#answer').type(String(answer));
+  await page.locator('#answer').fill(String(answer));
+  await expect(page.locator('#answer')).toHaveClass(/correct/);
   await expect(page.locator('#feedback')).toContainText('Richtig');
   await expect(page.locator('#score')).toHaveText('1');
 });
