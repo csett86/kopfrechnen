@@ -195,13 +195,6 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <p class="subtitle"><label for="language-select" id="language-label">Language:</label>
-      <select id="language-select">
-        <option value="de">Deutsch</option>
-        <option value="en">English</option>
-        <option value="nl">Nederlands</option>
-      </select>
-    </p>
     <h1 id="app-title"></h1>
     <p class="subtitle" id="subtitle"></p>
     <p id="intro-text"></p>
@@ -260,7 +253,6 @@
     de: {
       page_title: 'Kopfrechnen – Rechnen gegen die Zeit',
       app_title: 'Kopfrechnen',
-      language_label: 'Sprache:',
       subtitle: 'Kopfrechnen — gegen die Uhr!',
       intro_text: 'Löse so viele Aufgaben wie möglich.\nDie Aufgaben werden mit der Zeit schwerer.\nDu hast 7 Sekunden pro Aufgabe.\nJede richtige Antwort gibt 1 Punkt.',
       start_button: 'Spiel starten',
@@ -282,7 +274,6 @@
     en: {
       page_title: 'Mental Math – Race Against Time',
       app_title: 'Mental Math',
-      language_label: 'Language:',
       subtitle: 'Mental Math — beat the clock!',
       intro_text: 'Solve as many problems as possible.\nThe problems get harder over time.\nYou have 7 seconds per problem.\nEach correct answer gives 1 point.',
       start_button: 'Start game',
@@ -304,7 +295,6 @@
     nl: {
       page_title: 'Hoofdrekenen – Rekenen tegen de tijd',
       app_title: 'Hoofdrekenen',
-      language_label: 'Taal:',
       subtitle: 'Hoofdrekenen — tegen de klok!',
       intro_text: 'Los zo veel mogelijk opgaven op.\nDe opgaven worden na verloop van tijd moeilijker.\nJe hebt 7 seconden per opgave.\nElk goed antwoord geeft 1 punt.',
       start_button: 'Start spel',
@@ -360,12 +350,10 @@
   const feedbackEl    = document.getElementById('feedback');
   const finalScore    = document.getElementById('final-score');
   const levelDisplay  = document.getElementById('level-display');
-  const languageSelect = document.getElementById('language-select');
 
   document.getElementById('start-btn').addEventListener('click', startGame);
   document.getElementById('restart-btn').addEventListener('click', startGame);
   answerEl.addEventListener('input', onAnswerInput);
-  languageSelect.addEventListener('change', (event) => setLanguage(event.target.value));
 
   let score = 0;
   let currentAnswer = null;
@@ -396,7 +384,6 @@
     document.documentElement.lang = currentLang;
     document.title = translate('page_title');
     document.getElementById('app-title').textContent = translate('app_title');
-    document.getElementById('language-label').textContent = translate('language_label');
     document.getElementById('subtitle').textContent = translate('subtitle');
     document.getElementById('intro-text').textContent = translate('intro_text');
     document.getElementById('start-btn').textContent = translate('start_button');
@@ -409,16 +396,6 @@
     levelDisplay.textContent = translate(currentLevelKey);
   }
 
-  function setLanguage(lang) {
-    if (!I18N[lang]) return;
-    currentLang = lang;
-    languageSelect.value = currentLang;
-    applyTranslations();
-    feedbackEl.textContent = '';
-    feedbackEl.className = '';
-  }
-
-  languageSelect.value = currentLang;
   applyTranslations();
 
   // ── Problem generation ──────────────────────────────────────────
