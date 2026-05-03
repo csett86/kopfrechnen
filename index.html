@@ -130,6 +130,19 @@
     #answer.correct { border-color: #4ecca3; background: #1a3a30; }
     #answer.wrong   { border-color: #e94560; background: #3a1a1e; animation: shake 0.3s; }
 
+    @media (pointer: fine) {
+      #answer::-webkit-outer-spin-button,
+      #answer::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      #answer[type="number"] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+      }
+    }
+
     @keyframes shake {
       0%   { transform: translateX(0); }
       25%  { transform: translateX(-6px); }
