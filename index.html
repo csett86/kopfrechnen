@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kopfrechnen – Mental Math</title>
+  <title>Kopfrechnen – Rechnen gegen die Zeit</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -190,23 +190,23 @@
   <!-- Start screen -->
   <div id="start-screen">
     <h1>Kopf<span>rechnen</span></h1>
-    <p class="subtitle">Mental Math — beat the clock!</p>
-    <p>Answer as many math problems as you can.<br>
-       You start with <strong>10 seconds</strong> per question.<br>
-       Every <strong>3</strong> correct answers, time drops by <strong>1 second</strong> (min <strong>3s</strong>).<br>
-       Each correct answer scores <strong>1 point</strong>.</p>
-    <button id="start-btn">Start Game</button>
+    <p class="subtitle">Kopfrechnen — schlag die Uhr!</p>
+    <p>Löse so viele Aufgaben wie möglich.<br>
+       Du hast zu Beginn <strong>10 Sekunden</strong> pro Aufgabe.<br>
+       Alle <strong>3</strong> richtigen Antworten sinkt die Zeit um <strong>1 Sekunde</strong> (mind. <strong>3s</strong>).<br>
+       Jede richtige Antwort gibt <strong>1 Punkt</strong>.</p>
+    <button id="start-btn">Spiel starten</button>
   </div>
 
   <!-- Game screen -->
   <div id="game-screen">
     <div class="hud">
       <div class="score-box">
-        <div class="label">Score</div>
+         <div class="label">Punkte</div>
         <div class="value" id="score">0</div>
       </div>
       <div class="timer-box" id="timer-box">
-        <div class="label">Time</div>
+         <div class="label">Zeit</div>
         <div class="value" id="timer">10</div>
       </div>
     </div>
@@ -230,12 +230,12 @@
 
   <!-- Game over screen -->
   <div id="gameover-screen">
-    <div class="gameover-title">Time's Up!</div>
+    <div class="gameover-title">Zeit abgelaufen!</div>
     <div class="final-score">
-      Your score
+      Dein Ergebnis
       <span id="final-score">0</span>
     </div>
-    <button id="restart-btn">Play Again</button>
+    <button id="restart-btn">Nochmal spielen</button>
   </div>
 
 </div>
@@ -377,7 +377,7 @@
       scoreEl.textContent = score;
 
       answerEl.className = 'correct';
-      feedbackEl.textContent = '✓ Correct!';
+      feedbackEl.textContent = '✓ Richtig!';
       feedbackEl.className = '';
 
       setTimeout(nextQuestion, 400);
@@ -389,7 +389,7 @@
       const correctStr = String(currentAnswer);
       if (!correctStr.startsWith(raw) && !(currentAnswer < 0 && raw === '-')) {
         answerEl.className = 'wrong';
-        feedbackEl.textContent = '✗ Try again';
+        feedbackEl.textContent = '✗ Weiter versuchen';
         feedbackEl.className = 'wrong';
         setTimeout(() => {
           if (answerEl.className === 'wrong') answerEl.className = '';
