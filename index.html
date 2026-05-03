@@ -373,7 +373,7 @@
   }
 
   function translate(key) {
-    return I18N[currentLang][key] ?? key;
+    return I18N[currentLang]?.[key] ?? key;
   }
 
   function formatMessage(template, params = {}) {
