@@ -198,7 +198,7 @@
         <option value="nl">Nederlands</option>
       </select>
     </p>
-    <h1>Kopf<span>rechnen</span></h1>
+    <h1 id="app-title">Kopfrechnen</h1>
     <p class="subtitle" id="subtitle">Kopfrechnen — gegen die Uhr!</p>
     <p id="intro-text">Löse so viele Aufgaben wie möglich.<br>
        Die Aufgaben werden mit der Zeit schwerer.<br>
@@ -258,6 +258,7 @@
   const I18N = {
     de: {
       page_title: 'Kopfrechnen – Rechnen gegen die Zeit',
+      app_title: 'Kopfrechnen',
       language_label: 'Sprache',
       subtitle: 'Kopfrechnen — gegen die Uhr!',
       intro_html: 'Löse so viele Aufgaben wie möglich.<br>Die Aufgaben werden mit der Zeit schwerer.<br>Du hast <strong>7 Sekunden</strong> pro Aufgabe.<br>Jede richtige Antwort gibt <strong>1 Punkt</strong>.',
@@ -279,6 +280,7 @@
     },
     en: {
       page_title: 'Mental Math – Race Against Time',
+      app_title: 'Mental Math',
       language_label: 'Language',
       subtitle: 'Mental Math — beat the clock!',
       intro_html: 'Solve as many problems as possible.<br>The problems get harder over time.<br>You have <strong>7 seconds</strong> per problem.<br>Each correct answer gives <strong>1 point</strong>.',
@@ -300,6 +302,7 @@
     },
     nl: {
       page_title: 'Hoofdrekenen – Rekenen tegen de tijd',
+      app_title: 'Hoofdrekenen',
       language_label: 'Taal',
       subtitle: 'Hoofdrekenen — tegen de klok!',
       intro_html: 'Los zo veel mogelijk opgaven op.<br>De opgaven worden na verloop van tijd moeilijker.<br>Je hebt <strong>7 seconden</strong> per opgave.<br>Elk goed antwoord geeft <strong>1 punt</strong>.',
@@ -381,6 +384,7 @@
   function applyTranslations() {
     document.documentElement.lang = currentLang;
     document.title = t('page_title');
+    document.getElementById('app-title').textContent = t('app_title');
     document.getElementById('language-label').textContent = t('language_label');
     document.getElementById('subtitle').textContent = t('subtitle');
     document.getElementById('intro-text').innerHTML = t('intro_html');
