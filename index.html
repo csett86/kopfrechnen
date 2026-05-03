@@ -195,7 +195,7 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <p class="subtitle"><label for="language-select" id="language-label"></label>
+    <p class="subtitle"><label for="language-select" id="language-label">Sprache:</label>
       <select id="language-select">
         <option value="de">Deutsch</option>
         <option value="en">English</option>
@@ -260,7 +260,7 @@
     de: {
       page_title: 'Kopfrechnen – Rechnen gegen die Zeit',
       app_title: 'Kopfrechnen',
-      language_label: 'Sprache',
+      language_label: 'Sprache:',
       subtitle: 'Kopfrechnen — gegen die Uhr!',
       intro_text: 'Löse so viele Aufgaben wie möglich.\nDie Aufgaben werden mit der Zeit schwerer.\nDu hast 7 Sekunden pro Aufgabe.\nJede richtige Antwort gibt 1 Punkt.',
       start_button: 'Spiel starten',
@@ -282,7 +282,7 @@
     en: {
       page_title: 'Mental Math – Race Against Time',
       app_title: 'Mental Math',
-      language_label: 'Language',
+      language_label: 'Language:',
       subtitle: 'Mental Math — beat the clock!',
       intro_text: 'Solve as many problems as possible.\nThe problems get harder over time.\nYou have 7 seconds per problem.\nEach correct answer gives 1 point.',
       start_button: 'Start game',
@@ -304,7 +304,7 @@
     nl: {
       page_title: 'Hoofdrekenen – Rekenen tegen de tijd',
       app_title: 'Hoofdrekenen',
-      language_label: 'Taal',
+      language_label: 'Taal:',
       subtitle: 'Hoofdrekenen — tegen de klok!',
       intro_text: 'Los zo veel mogelijk opgaven op.\nDe opgaven worden na verloop van tijd moeilijker.\nJe hebt 7 seconden per opgave.\nElk goed antwoord geeft 1 punt.',
       start_button: 'Start spel',
@@ -324,7 +324,7 @@
       level_expert: 'Expert',
     },
   };
-  let currentLang = 'de';
+  let currentLang = detectInitialLanguage();
 
   // ── Difficulty levels ───────────────────────────────────────────
   // Each level defines which operations are available, the max operand for
@@ -374,6 +374,20 @@
   let startTime = null;   // timestamp when current question started
   let currentLevelKey = LEVELS[0].nameKey;
 
+  function detectInitialLanguage() {
+    try {
+      const saved = localStorage.getItem('kopfrechnen-lang');
+      if (saved && I18N[saved]) return saved;
+    } catch {}
+    const browserLangs = [...(navigator.languages || []), navigator.language];
+    for (const lang of browserLangs) {
+      if (!lang) continue;
+      const short = lang.toLowerCase().slice(0, 2);
+      if (I18N[short]) return short;
+    }
+    return 'de';
+  }
+
   function translate(key) {
     return I18N[currentLang][key] ?? key;
   }
@@ -386,7 +400,7 @@
     document.documentElement.lang = currentLang;
     document.title = translate('page_title');
     document.getElementById('app-title').textContent = translate('app_title');
-    document.getElementById('language-label').textContent = `${translate('language_label')}:`;
+    document.getElementById('language-label').textContent = translate('language_label');
     document.getElementById('subtitle').textContent = translate('subtitle');
     document.getElementById('intro-text').textContent = translate('intro_text');
     document.getElementById('start-btn').textContent = translate('start_button');
@@ -402,9 +416,16 @@
   function setLanguage(lang) {
     if (!I18N[lang]) return;
     currentLang = lang;
+    languageSelect.value = currentLang;
+    try {
+      localStorage.setItem('kopfrechnen-lang', currentLang);
+    } catch {}
     applyTranslations();
+    feedbackEl.textContent = '';
+    feedbackEl.className = '';
   }
 
+  languageSelect.value = currentLang;
   applyTranslations();
 
   // ── Problem generation ──────────────────────────────────────────
