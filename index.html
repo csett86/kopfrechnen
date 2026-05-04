@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kopfrechnen – Rechnen gegen die Zeit</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -42,6 +43,27 @@
     }
 
     /* ── Start screen ── */
+    .start-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .app-logo {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+    }
+
+    .start-header h1 {
+      margin-bottom: 0.15rem;
+    }
+
+    .start-header .subtitle {
+      margin-bottom: 0;
+    }
+
     #start-screen button {
       margin-top: 1rem;
     }
@@ -232,8 +254,13 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <h1 id="app-title"></h1>
-    <p class="subtitle" id="subtitle"></p>
+    <div class="start-header">
+      <img src="favicon.svg" class="app-logo" alt="Kopfrechnen logo" />
+      <div>
+        <h1 id="app-title"></h1>
+        <p class="subtitle" id="subtitle"></p>
+      </div>
+    </div>
     <p id="intro-text"></p>
     <button id="start-btn"></button>
   </div>
