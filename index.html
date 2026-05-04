@@ -43,10 +43,25 @@
     }
 
     /* ── Start screen ── */
+    .start-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
     .app-logo {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 1rem;
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+    }
+
+    .start-header h1 {
+      margin-bottom: 0.15rem;
+    }
+
+    .start-header .subtitle {
+      margin-bottom: 0;
     }
 
     #start-screen button {
@@ -239,9 +254,13 @@
 
   <!-- Start screen -->
   <div id="start-screen">
-    <img src="favicon.svg" class="app-logo" alt="Kopfrechnen logo" />
-    <h1 id="app-title"></h1>
-    <p class="subtitle" id="subtitle"></p>
+    <div class="start-header">
+      <img src="favicon.svg" class="app-logo" alt="Kopfrechnen logo" />
+      <div>
+        <h1 id="app-title"></h1>
+        <p class="subtitle" id="subtitle"></p>
+      </div>
+    </div>
     <p id="intro-text"></p>
     <button id="start-btn"></button>
   </div>
