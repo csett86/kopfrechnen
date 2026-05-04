@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background -->
+  <rect width="64" height="64" rx="12" fill="#1a1a2e"/>
+  <!-- Plus sign (left, red) -->
+  <rect x="6" y="29.5" width="20" height="5" rx="2.5" fill="#e94560"/>
+  <rect x="13.5" y="22" width="5" height="20" rx="2.5" fill="#e94560"/>
+  <!-- Times sign (right, blue) — two diagonal bars -->
+  <rect x="38" y="29.5" width="20" height="5" rx="2.5" fill="#53d8fb" transform="rotate(45 48 32)"/>
+  <rect x="38" y="29.5" width="20" height="5" rx="2.5" fill="#53d8fb" transform="rotate(-45 48 32)"/>
+</svg>
