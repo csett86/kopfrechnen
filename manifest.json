@@ -2,7 +2,7 @@
   "name": "Kopfrechnen – Rechnen gegen die Zeit",
   "short_name": "Kopfrechnen",
   "description": "An HTML game where you calculate simple math against time, with increasing difficulty.",
-  "start_url": ".",
+  "start_url": "/kopfrechnen/",
   "display": "standalone",
   "background_color": "#1a1a2e",
   "theme_color": "#1a1a2e",
